@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  client:
+    build: 
+      context: ./CrudEstudantes
+      dockerfile: ./server/Dockerfile
+    image: estudante/front
+    container_name: front-client
+    ports:
+      - 3001:80
+    volumes:
+      - ./CrudEstudantes/:/app/
+    stdin_open: true
+    tty: true
+    depends_on:
+      - service
+    restart: unless-stopped
+    networks:
+      - netApi
+
+  service:
+    build: ./fastapi-desafio/src
+    command: |
+      bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn app.main:app --reload --workers 1 --host 0.0.0.0 --port 8000'
+    volumes:
+      - ./fastapi-desafio/src/:/usr/src/app/
+    ports:
+      - 8003:8000
+    environment:
+      - DATABASE_URL=postgresql://fastapi:fastapi@db/fastapi_dev
+    depends_on:
+      - db
+    networks:
+      - netApi
+
+  db:
+    container_name: db
+    image: postgres:15.1-alpine
+    restart: unless-stopped
+    environment:
+       POSTGRES_USER: fastapi
+       POSTGRES_PASSWORD: fastapi
+       POSTGRES_DB: fastapi_dev
+       DATABASE_PORT: 5432
+       POSTGRES_HOST: 'localhost'
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    networks:
+      - netApi
+
+volumes:
+  postgres_data:
+
+networks:
+  netApi:
+    driver: bridge

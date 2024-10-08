@@ -1,0 +1,53 @@
+<app-bread-crump [items]="[{text: 'Estudantes', link: '/estudantes'}, {text: pageTitle}]"></app-bread-crump>
+
+<app-page-header [page-title]="pageTitle" button-text="<< Voltar" button-link="/estudantes" button-class="btn-light">
+</app-page-header>
+
+<form [formGroup]="estudanteForm" (submit)="submitForm()">
+  <div class="card mb-3">
+    <div class="card-header">
+      Informações sobre do estudante
+    </div>
+
+    <div class="card-body">
+      <div class="form-row">
+        <div class="form-group col-md-4">
+          <label for="nome">Nome</label>
+          <input type="text" class="form-control" formControlName="nome" id="nome">
+
+          <app-form-field-error [form-control]="estudanteForm.get('nome')"></app-form-field-error>
+        </div>
+
+        <div class="form-group col-md-6">
+          <label for="email">email</label>
+          <input type="text" class="form-control" formControlName="email" id="email">
+
+          <app-form-field-error [form-control]="estudanteForm.get('email')"></app-form-field-error>
+        </div>
+        <div class="form-group col-md-6">
+          <label for="idade">Idade</label>
+          <input type="number" class="form-control" formControlName="idade" id="idade">
+
+          <app-form-field-error [form-control]="estudanteForm.get('idade')"></app-form-field-error>
+        </div>
+        <div class="col-md-6">
+          <label for="curso">Curso</label>
+          <input type="text" id="localidade" formControlName="curso" class="form-control">
+
+          <app-form-field-error [form-control]="estudanteForm.get('curso')"></app-form-field-error>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert alert-danger mt-4" *ngIf="serverErrorMessage">
+    <strong>Erro no servidor:</strong>
+    <ul>
+      <li *ngFor="let error of serverErrorMessage">{{error}}</li>
+    </ul>
+  </div>
+
+  <button [disabled]="submittingForm || estudanteForm.invalid" type="submit" class="btn btn-primary btn-lg float-right">
+    Salvar
+  </button>
+</form>
